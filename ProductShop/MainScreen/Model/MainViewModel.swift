@@ -15,6 +15,7 @@ struct MainViewModel {
         case adverticing
         case products
         case dishes
+        case goods
     }
 }
 
@@ -48,4 +49,14 @@ let dishes: MainViewModel = .init(type: .dishes, items: [
     .init(titel: "пирог 3", image: URL(string: "https://i.pinimg.com/originals/8e/f7/43/8ef743a8c2a521d9bdbb4ce7ee7bad34.jpg"), description: "просто рецепт 3"),
 ])
 
-let dataForlayout : [MainViewModel] = [adverticings, products, dishes]
+let goods: MainViewModel = .init(type: .goods, items: [
+    .init(titel: "Футболка", image: URL(string: "https://img.freepik.com/free-photo/shirt-mockup-concept-with-plain-clothing_23-2149448792.jpg?size=626&ext=jpg&ga=GA1.2.601643660.1690933713&semt=sph"), description: "Описание футболки"),
+    .init(titel: "Хлеб", image: URL(string: ""), description: "Описание хлеба"),
+    .init(titel: "", image: URL(string: "https://img.freepik.com/free-photo/freshly-bakery-products-and-spikelets-on-cloth-at-home-close-up-photo-of-freshly-baked-bread-products_613910-6786.jpg?size=626&ext=jpg&ga=GA1.2.601643660.1690933713&semt=sph"), description: "Описание "),
+    .init(titel: "Компы", image: URL(string: "https://img.freepik.com/free-photo/modern-stationary-collection-arrangement_23-2149309643.jpg?size=626&ext=jpg&ga=GA1.2.601643660.1690933713&semt=sph"), description: "Описание компов"),
+    .init(titel: "Корзина 1", image: URL(string: "https://img.freepik.com/free-photo/pink-empty-shopping-basket-online-shopping-concept-on-pink-background-3d-rendering_56104-1527.jpg?size=626&ext=jpg&ga=GA1.2.601643660.1690933713&semt=sph"), description: "Описание Корзина 1"),
+    .init(titel: "Корзина 2", image: URL(string: "https://img.freepik.com/free-photo/pink-empty-shopping-basket-online-shopping-concept-on-pink-background-3d-rendering_56104-1527.jpg?size=626&ext=jpg&ga=GA1.2.601643660.1690933713&semt=sph"), description: "Описание Корзина 2"),
+    .init(titel: "Корзина 3", image: URL(string: "https://img.freepik.com/free-photo/pink-empty-shopping-basket-online-shopping-concept-on-pink-background-3d-rendering_56104-1527.jpg?size=626&ext=jpg&ga=GA1.2.601643660.1690933713&semt=sph"), description: "Описание Корзина 3"),
+])
+
+let dataForlayout : [MainViewModel] = [adverticings, products, dishes, goods]

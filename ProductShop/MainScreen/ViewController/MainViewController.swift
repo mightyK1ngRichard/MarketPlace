@@ -36,6 +36,7 @@ class MainViewController: UIViewController {
         let layout = createCompositionalLayout()
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        collectionView.register(HeaderSection.self, forSupplementaryViewOfKind: "catigoryHeaderId", withReuseIdentifier: "headerID")
     }
     
     private func setup() {
@@ -61,6 +62,8 @@ private extension MainViewController {
                 return createCompositionalLayoutForProducts()
             case .dishes:
                 return createCompositionalLayoutForDishes()
+            case .goods:
+                return createCompositionalLayoutForGoods()
             }
         }
         return layout
@@ -96,10 +99,15 @@ private extension MainViewController {
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(500)),
             subitems: [item])
-        group.contentInsets.leading = 16
         
         let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = .init(top: 50, leading: 10, bottom: 0, trailing: 10)
+        section.contentInsets = .init(top: 0, leading: 16, bottom: 0, trailing: 0)
+        section.boundarySupplementaryItems = [
+            .init(layoutSize: .init(widthDimension: .fractionalWidth(1),
+                                    heightDimension: .absolute(50)),
+                  elementKind: "catigoryHeaderId",
+                  alignment: .topLeading)
+        ]
         return section
     }
     
@@ -110,7 +118,7 @@ private extension MainViewController {
             heightDimension: .fractionalHeight(1)))
     
         let group = NSCollectionLayoutGroup.horizontal(
-            layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(200)),
+            layoutSize: .init(widthDimension: .fractionalWidth(0.8), heightDimension: .absolute(200)),
             subitems: [item])
         group.contentInsets = .init(top: 50, leading: 10, bottom: 0, trailing: 10)
         
@@ -118,6 +126,26 @@ private extension MainViewController {
         section.orthogonalScrollingBehavior = .continuous
         return section
     }
+    
+    /// CompositionalLayout для товаров.
+    func createCompositionalLayoutForGoods() -> NSCollectionLayoutSection {
+        let item = NSCollectionLayoutItem(layoutSize: .init(
+            widthDimension: .fractionalWidth(0.5),
+            heightDimension: .absolute(300)))
+        item.contentInsets.trailing = 16
+        item.contentInsets.bottom = 16
+        
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: .init(widthDimension: .fractionalWidth(1),
+                              heightDimension: .estimated(1000)),
+            subitems: [item])
+        
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = .init(top: 50, leading: 16, bottom: 0, trailing: 0)
+//        section.orthogonalScrollingBehavior = .continuous
+        return section
+    }
+    
 }
 
 // MARK: Network.
@@ -148,7 +176,10 @@ extension MainViewController: UICollectionViewDataSource {
         return cell
     }
    
-    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let header = collectionView.dequeueReusableSupplementaryView(ofKind: "catigoryHeaderId", withReuseIdentifier: "headerID", for: indexPath)
+        return header
+    }
 }
 
 // MARK: - Preview:
