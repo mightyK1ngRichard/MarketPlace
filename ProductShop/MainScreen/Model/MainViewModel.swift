@@ -28,11 +28,11 @@ struct Item {
 // MARK: - Типо данные из бд для вёрстки.
 
 let adverticings: MainViewModel = .init(type: MainViewModel.SectionType.adverticing, items: [
-    .init(titel: nil, image: URL(string: "https://w.forfun.com/fetch/59/59b7098cd23a4838d0a8974008b16429.jpeg"), description: nil),
-    .init(titel: nil, image: URL(string: "https://wp-s.ru/wallpapers/10/17/322927698378615/nochnoe-zv-zdnoe-nebo-i-gory.jpg"), description: nil),
-    .init(titel: nil, image: URL(string: "https://fikiwiki.com/uploads/posts/2022-02/1644928943_4-fikiwiki-com-p-krasivie-kartinki-nochnogo-neba-4.jpg"), description: nil),
-    .init(titel: nil, image: URL(string: "https://catherineasquithgallery.com/uploads/posts/2021-02/1613304652_97-p-sinii-nochnoi-fon-133.jpg"), description: nil),
-    .init(titel: nil, image: URL(string: "http://vsegda-pomnim.com/uploads/posts/2022-04/1651042677_60-vsegda-pomnim-com-p-nochnoe-nebo-more-foto-76.jpg"), description: nil)
+    .init(titel: nil, image: URL(string: "https://sun9-43.userapi.com/impg/w3aXjQYkCz555ON7GxBKSzA2A0S91rRLT_7UKA/Pyvdfo-CkJA.jpg?size=1064x500&quality=95&sign=245c56fb7bd1063be0475734c5a91842&c_uniq_tag=Luxnl2C1lY4sKUDP8xXhdVIS5Wx9YCWubQqhJA6Lxxo&type=album"), description: nil),
+    .init(titel: nil, image: URL(string: "https://media.thenerdstash.com/wp-content/uploads/2023/06/Miles-Morales-1.jpg.webp"), description: nil),
+    .init(titel: nil, image: URL(string: "https://forum.rudtp.ru/attachments/98777-jpg.114856/"), description: nil),
+    .init(titel: nil, image: URL(string: "https://sun9-21.userapi.com/impf/H0wiYkIMaAY9H9_c8__Um30l36GzJoQFgf6zvg/eICdHSnEw4U.jpg?size=910x468&quality=96&sign=075437fc55f55e2e6ed44bdde1a7afc8&c_uniq_tag=ME_f1o9rKfz5DN6duJgelKPiVPqc7vR4ND_SAI56JdE&type=album"), description: nil),
+    .init(titel: nil, image: URL(string: "https://sun9-80.userapi.com/impf/c621616/v621616795/2b81b/W29aXc67kl0.jpg?size=1280x667&quality=96&sign=9ca432063ddb8fcaccd7f3ca66948e67&c_uniq_tag=9xC7QqzgDiMsE-YdjmKecAyDUCnhAhQGiNLLDdFM5tI&type=album"), description: nil),
 ])
 
 let products: MainViewModel = .init(type: .products, items: [

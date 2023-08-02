@@ -61,7 +61,7 @@ final class AdverticingView: UICollectionViewCell {
                     return
                 }
                 guard let data = data else { return }
-                
+
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     self.imageView.image = UIImage(data: data)

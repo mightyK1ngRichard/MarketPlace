@@ -28,6 +28,8 @@ class MainViewController: UIViewController {
         initCollectionView()
         setup()
         fetchData()
+        /// Вечный скролл рекламы располгаем в центр.
+        collectionView.scrollToItem(at: IndexPath(item: 1000/2, section: 0), at: .left, animated: false)
     }
     
     // MARK: Setup
@@ -75,16 +77,14 @@ private extension MainViewController {
         let item = NSCollectionLayoutItem(layoutSize: .init(
             widthDimension: .fractionalWidth(1),
             heightDimension: .fractionalHeight(1)))
-        // item.contentInsets = .init(top: 0, leading: 0, bottom: 10, trailing: 0)
-        // item.contentInsets.bottom = 10
-        
         let group = NSCollectionLayoutGroup.horizontal(
-            layoutSize: .init(widthDimension: .fractionalWidth(1),
+            layoutSize: .init(widthDimension: .fractionalWidth(0.9),
                               heightDimension: .absolute(200)),
             subitems: [item])
-        
+        group.contentInsets.trailing = 5
+        group.contentInsets.leading = 5
         let section = NSCollectionLayoutSection(group: group)
-        section.orthogonalScrollingBehavior = .paging
+        section.orthogonalScrollingBehavior = .groupPagingCentered
         return section
     }
     
@@ -167,7 +167,11 @@ extension MainViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel[section].items.count
+        /// Бесконечный скролл для рекламы.
+        if viewModel[section].type == .adverticing {
+            return 1000
+        }
+        return viewModel[section].items.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -175,7 +179,9 @@ extension MainViewController: UICollectionViewDataSource {
         switch sectionContent.type {
         case .adverticing:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AdverticingView.cellID, for: indexPath) as? AdverticingView else { return UICollectionViewCell() }
-            cell.configure(imageURL: sectionContent.items[indexPath.item].image)
+            /// Типо бесконечный скролл, реализовал засчёт mod от всего массива.
+            let currentIndex = indexPath.item % sectionContent.items.count
+            cell.configure(imageURL: sectionContent.items[currentIndex].image)
             return cell
         case .products:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
