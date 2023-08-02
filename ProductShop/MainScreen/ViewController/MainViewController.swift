@@ -42,7 +42,6 @@ class MainViewController: UIViewController {
         view.addSubview(collectionView)
         collectionView.dataSource = self
         collectionView.frame = view.bounds
-        collectionView.backgroundColor = .blue
     }
     
 }
