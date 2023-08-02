@@ -35,6 +35,7 @@ class MainViewController: UIViewController {
     private func initCollectionView() {
         let layout = createCompositionalLayout()
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.register(AdverticingView.self, forCellWithReuseIdentifier: AdverticingView.cellID)
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         collectionView.register(HeaderSection.self, forSupplementaryViewOfKind: "catigoryHeaderId", withReuseIdentifier: "headerID")
     }
@@ -142,7 +143,6 @@ private extension MainViewController {
         
         let section = NSCollectionLayoutSection(group: group)
         section.contentInsets = .init(top: 50, leading: 16, bottom: 0, trailing: 0)
-//        section.orthogonalScrollingBehavior = .continuous
         return section
     }
     
@@ -171,9 +171,25 @@ extension MainViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-        cell.backgroundColor = .red
-        return cell
+        let sectionContent = viewModel[indexPath.section]
+        switch sectionContent.type {
+        case .adverticing:
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AdverticingView.cellID, for: indexPath) as? AdverticingView else { return UICollectionViewCell() }
+            cell.configure(imageURL: sectionContent.items[indexPath.item].image)
+            return cell
+        case .products:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+            cell.backgroundColor = .red
+            return cell
+        case .dishes:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+            cell.backgroundColor = .red
+            return cell
+        case .goods:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+            cell.backgroundColor = .red
+            return cell
+        }
     }
    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -192,6 +208,7 @@ struct PreviewMainViewController: PreviewProvider {
     static var previews: some View {
         ContainerView()
             .ignoresSafeArea()
+            
     }
     
     struct ContainerView: UIViewControllerRepresentable {
