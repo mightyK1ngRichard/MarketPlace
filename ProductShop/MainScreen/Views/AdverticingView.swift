@@ -16,6 +16,7 @@ final class AdverticingView: UICollectionViewCell {
     private let imageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
+        iv.layer.cornerRadius = 10
         iv.clipsToBounds = true
         return iv
     }()

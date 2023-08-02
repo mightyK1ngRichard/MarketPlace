@@ -20,6 +20,7 @@ class MainViewController: UIViewController {
     // MARK: Subviews
     
     private var collectionView: UICollectionView!
+    private var menuViewController: MenuViewController!
     
     // MARK: Lifecycle
     
@@ -27,7 +28,13 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
         initCollectionView()
         setup()
+//        setupMenuViewController()
+        setupNavigationView()
         fetchData()
+        
+//        let panGester = UIPanGestureRecognizer(target: self, action: #selector(didSwapGester))
+//        view.addGestureRecognizer(panGester)
+        
         /// Вечный скролл рекламы располгаем в центр.
         collectionView.scrollToItem(at: IndexPath(item: 1000/2, section: 0), at: .left, animated: false)
     }
@@ -38,6 +45,7 @@ class MainViewController: UIViewController {
         let layout = createCompositionalLayout()
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(AdverticingView.self, forCellWithReuseIdentifier: AdverticingView.cellID)
+        collectionView.register(ProductsView.self, forCellWithReuseIdentifier: ProductsView.cellID)
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         collectionView.register(HeaderSection.self, forSupplementaryViewOfKind: "catigoryHeaderId", withReuseIdentifier: "headerID")
     }
@@ -48,6 +56,55 @@ class MainViewController: UIViewController {
         collectionView.frame = view.bounds
     }
     
+    private func setupMenuViewController() {
+        menuViewController = MenuViewController()
+        menuViewController.view.frame = .init(x: -300, y: 0, width: 300, height: view.bounds.height)
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let keyWindow = windowScene.windows.first {
+            keyWindow.addSubview(menuViewController.view)
+            keyWindow.rootViewController?.addChild(menuViewController)
+        }
+    }
+    
+    private func setupNavigationView() {
+        title = "K1ngMarket"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(pressedButton))
+    }
+    
+    // MARK: - UIPanGestureRecognizer
+    
+    @objc private func didSwapGester(gester: UIPanGestureRecognizer) {
+        if gester.state == .changed {
+            print(gester.translation(in: view))
+            var x = gester.translation(in: view).x
+            x = min(x, 300)
+            x = max(x, 0)
+            let transform = CGAffineTransform(translationX: x, y: 0)
+            menuViewController.view.transform = transform
+            view.transform = transform
+            
+        } else if gester.state == .ended {
+            performAnimations(tranform: CGAffineTransform(translationX: 300, y: 0))
+        }
+    }
+    
+    private func performAnimations(tranform: CGAffineTransform) {
+        UIView.animate(
+            withDuration: 0.5,
+            delay: 0,
+            usingSpringWithDamping: 1,
+            initialSpringVelocity: 1,
+            options: .curveEaseOut,
+            animations: { [weak self] in
+                guard let self = self else { return }
+                self.menuViewController.view.transform = tranform
+                self.navigationController?.view.transform = tranform
+            })
+    }
+    
+    @objc private func pressedButton() { }
 }
 
 // MARK: - Setup CompositionalLayout.
@@ -117,7 +174,7 @@ private extension MainViewController {
         let item = NSCollectionLayoutItem(layoutSize: .init(
             widthDimension: .fractionalWidth(1),
             heightDimension: .fractionalHeight(1)))
-    
+        
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: .init(widthDimension: .fractionalWidth(0.8), heightDimension: .absolute(200)),
             subitems: [item])
@@ -148,7 +205,7 @@ private extension MainViewController {
     
 }
 
-// MARK: Network.
+// MARK: - Network.
 
 private extension MainViewController {
     
@@ -184,8 +241,9 @@ extension MainViewController: UICollectionViewDataSource {
             cell.configure(imageURL: sectionContent.items[currentIndex].image)
             return cell
         case .products:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-            cell.backgroundColor = .red
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductsView.cellID, for: indexPath) as? ProductsView else { return UICollectionViewCell() }
+            let currentIndex = indexPath.item % sectionContent.items.count
+            cell.configure(product: sectionContent.items[currentIndex])
             return cell
         case .dishes:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
@@ -197,7 +255,7 @@ extension MainViewController: UICollectionViewDataSource {
             return cell
         }
     }
-   
+    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: "catigoryHeaderId", withReuseIdentifier: "headerID", for: indexPath)
         return header
@@ -214,16 +272,17 @@ struct PreviewMainViewController: PreviewProvider {
     static var previews: some View {
         ContainerView()
             .ignoresSafeArea()
-            
+        
     }
     
     struct ContainerView: UIViewControllerRepresentable {
         typealias PreviewContext = UIViewControllerRepresentableContext<CurrentPreview>
         
         func makeUIViewController(context: PreviewContext) -> some UIViewController {
-            return MainViewController()
+            return UINavigationController(rootViewController: MainViewController())
         }
         
         func updateUIViewController(_ uiViewController: CurrentPreview.UIViewControllerType, context: PreviewContext) {}
     }
 }
+ 

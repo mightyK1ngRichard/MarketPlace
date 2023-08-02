@@ -14,7 +14,7 @@ final class HeaderSection: UICollectionReusableView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         label = UILabel()
-        label.text = "Header text"
+        label.text = "Категории"
         addSubview(label)
     }
     
