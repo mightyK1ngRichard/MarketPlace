@@ -17,6 +17,14 @@ class MainViewController: UIViewController {
         }
     }
     
+    // MARK: Values.
+    
+    private var menuIsOpened = false
+    /// Ширина бокового меню.
+    private var menuWidth: CGFloat = 300
+    /// Скорость свапа по экрану для открытия бокового меню.
+    private let needVelocityForOpenMenu: CGFloat = 500
+    
     // MARK: Subviews
     
     private var collectionView: UICollectionView!
@@ -26,14 +34,12 @@ class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        initCollectionView()
         setup()
-//        setupMenuViewController()
-        setupNavigationView()
         fetchData()
         
-//        let panGester = UIPanGestureRecognizer(target: self, action: #selector(didSwapGester))
-//        view.addGestureRecognizer(panGester)
+        setupMenuViewController()
+        let panGester = UIPanGestureRecognizer(target: self, action: #selector(didSwapGester))
+        view.addGestureRecognizer(panGester)
         
         /// Вечный скролл рекламы располгаем в центр.
         collectionView.scrollToItem(at: IndexPath(item: 1000/2, section: 0), at: .left, animated: false)
@@ -51,6 +57,8 @@ class MainViewController: UIViewController {
     }
     
     private func setup() {
+        initCollectionView()
+        
         view.addSubview(collectionView)
         collectionView.dataSource = self
         collectionView.frame = view.bounds
@@ -58,39 +66,58 @@ class MainViewController: UIViewController {
     
     private func setupMenuViewController() {
         menuViewController = MenuViewController()
-        menuViewController.view.frame = .init(x: -300, y: 0, width: 300, height: view.bounds.height)
-        
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let keyWindow = windowScene.windows.first {
-            keyWindow.addSubview(menuViewController.view)
-            keyWindow.rootViewController?.addChild(menuViewController)
-        }
+        menuViewController.view.frame = .init(x: -menuWidth, y: 0, width: menuWidth, height: view.bounds.height)
     }
     
-    private func setupNavigationView() {
-        title = "K1ngMarket"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(pressedButton))
-    }
-    
-    // MARK: - UIPanGestureRecognizer
-    
-    @objc private func didSwapGester(gester: UIPanGestureRecognizer) {
+}
+
+// MARK: - UIPanGestureRecognizer
+
+private extension MainViewController {
+    @objc func didSwapGester(gester: UIPanGestureRecognizer) {
+        let translation = gester.translation(in: view)
         if gester.state == .changed {
-            print(gester.translation(in: view))
-            var x = gester.translation(in: view).x
-            x = min(x, 300)
+            var x = translation.x
+            if menuIsOpened {
+                x += menuWidth
+            }
+            
+            x = min(x, menuWidth)
             x = max(x, 0)
             let transform = CGAffineTransform(translationX: x, y: 0)
             menuViewController.view.transform = transform
             view.transform = transform
             
         } else if gester.state == .ended {
-            performAnimations(tranform: CGAffineTransform(translationX: 300, y: 0))
+            let translation = gester.translation(in: view)
+            let velocity = gester.velocity(in: view)
+            if menuIsOpened {
+                if -velocity.x > needVelocityForOpenMenu {
+                    hideMenu()
+                    return
+                }
+                
+                if abs(translation.x) < menuWidth/2 {
+                    openMenu()
+                } else {
+                    hideMenu()
+                }
+            } else {
+                if velocity.x > needVelocityForOpenMenu {
+                    openMenu()
+                    return
+                }
+                
+                if translation.x < menuWidth/2 {
+                    hideMenu()
+                } else {
+                    openMenu()
+                }
+            }
         }
     }
     
-    private func performAnimations(tranform: CGAffineTransform) {
+    func performAnimations(tranform: CGAffineTransform) {
         UIView.animate(
             withDuration: 0.5,
             delay: 0,
@@ -99,12 +126,20 @@ class MainViewController: UIViewController {
             options: .curveEaseOut,
             animations: { [weak self] in
                 guard let self = self else { return }
+                self.view.transform = tranform
                 self.menuViewController.view.transform = tranform
-                self.navigationController?.view.transform = tranform
             })
     }
     
-    @objc private func pressedButton() { }
+    func openMenu() {
+        menuIsOpened = true
+        performAnimations(tranform: CGAffineTransform(translationX: menuWidth, y: 0))
+    }
+    
+    func hideMenu() {
+        menuIsOpened = false
+        performAnimations(tranform: .identity)
+    }
 }
 
 // MARK: - Setup CompositionalLayout.
@@ -279,10 +314,10 @@ struct PreviewMainViewController: PreviewProvider {
         typealias PreviewContext = UIViewControllerRepresentableContext<CurrentPreview>
         
         func makeUIViewController(context: PreviewContext) -> some UIViewController {
-            return UINavigationController(rootViewController: MainViewController())
+            return UINavigationController(rootViewController: ContainerViewController())
         }
         
         func updateUIViewController(_ uiViewController: CurrentPreview.UIViewControllerType, context: PreviewContext) {}
     }
 }
- 
+
